@@ -31,3 +31,6 @@ htmlcov/
 # Local demo data
 *.db
 instance/
+
+# Nested empty local clone (not part of this app)
+Demo_Monitor/
