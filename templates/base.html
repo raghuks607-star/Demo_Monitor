@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Server Monitor{% endblock %}</title>
+  {% block head_extra %}{% endblock %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="{{ url_for('main.index') }}">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Server Monitor</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-link{% if request.endpoint == 'main.index' %} is-active{% endif %}" href="{{ url_for('main.index') }}">Home</a>
+        {% if current_user %}
+        <a class="nav-link{% if request.endpoint == 'main.dashboard' %} is-active{% endif %}" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a class="nav-link{% if request.endpoint == 'main.server_new' %} is-active{% endif %}" href="{{ url_for('main.server_new') }}">Add server</a>
+        <a class="nav-link" href="{{ url_for('main.logout') }}">Sign out</a>
+        {% else %}
+        <a class="nav-link{% if request.endpoint == 'main.login' %} is-active{% endif %}" href="{{ url_for('main.login') }}">Sign in</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <main class="main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flash-list">
+          {% for category, message in messages %}
+          <li class="flash flash--{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <p>Local demo only · Read-only metrics UI · No production deploy</p>
+    </footer>
+  </div>
+</body>
+</html>

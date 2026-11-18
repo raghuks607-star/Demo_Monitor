@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == 'create' %}Add server{% else %}Edit server{% endif %} · Server Monitor{% endblock %}
+
+{% block content %}
+<section class="section-head">
+  <div>
+    <p class="eyebrow">Inventory</p>
+    <h1>{% if mode == 'create' %}Add server{% else %}Edit server{% endif %}</h1>
+    <p class="lede">SSH credentials are encrypted at rest and never shown again in the UI.</p>
+  </div>
+  <a class="btn btn--ghost" href="{{ url_for('main.dashboard') }}">Back to dashboard</a>
+</section>
+
+{% if errors %}
+<ul class="form-error-list" role="alert">
+  {% for err in errors %}
+  <li class="form-error">{{ err }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<form class="auth-form server-form" method="post" autocomplete="off">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label class="field">
+    <span>Label</span>
+    <input type="text" name="label" value="{{ form.label }}" required maxlength="120">
+  </label>
+
+  <label class="field">
+    <span>Hostname / IP</span>
+    <input type="text" name="hostname" value="{{ form.hostname }}" required maxlength="253">
+  </label>
+
+  <div class="field-row">
+    <label class="field">
+      <span>SSH username</span>
+      <input type="text" name="ssh_username" value="{{ form.ssh_username }}" required maxlength="64">
+    </label>
+    <label class="field">
+      <span>SSH port</span>
+      <input type="number" name="ssh_port" value="{{ form.ssh_port }}" min="1" max="65535" required>
+    </label>
+  </div>
+
+  <label class="field">
+    <span>Auth type</span>
+    <select name="auth_type">
+      <option value="password" {% if form.auth_type == 'password' %}selected{% endif %}>Password</option>
+      <option value="key" {% if form.auth_type == 'key' %}selected{% endif %}>Private key (PEM)</option>
+    </select>
+  </label>
+
+  <label class="field">
+    <span>
+      {% if mode == 'create' %}
+        SSH password or private key
+      {% else %}
+        New SSH password / private key (leave blank to keep existing)
+      {% endif %}
+    </span>
+    <textarea name="credential" rows="4" {% if mode == 'create' %}required{% endif %} placeholder="{% if mode == 'edit' %}•••••••• (unchanged if empty){% endif %}"></textarea>
+  </label>
+
+  <div class="cta-row">
+    <button class="btn btn--primary" type="submit">{% if mode == 'create' %}Add server{% else %}Save changes{% endif %}</button>
+    <a class="btn btn--ghost" href="{{ url_for('main.dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

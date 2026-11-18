@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Home · Server Monitor{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Linux · Live snapshots</p>
+  <h1>Watch your servers without SSH hopping</h1>
+  <p class="lede">
+    Internal demo for L1–L3 and app teams. Sign in, add Linux hosts, and view
+    CPU, memory, network, and open ports in a read-only UI.
+  </p>
+  <div class="cta-row">
+    {% if current_user %}
+    <a class="btn btn--primary" href="{{ url_for('main.dashboard') }}">Open dashboard</a>
+    {% else %}
+    <a class="btn btn--primary" href="{{ url_for('main.login') }}">Sign in</a>
+    {% endif %}
+    <a class="btn btn--ghost" href="#overview">See what’s included</a>
+  </div>
+</section>
+
+<section id="overview" class="overview">
+  <h2>What this demo will show</h2>
+  <ul class="feature-list">
+    <li>
+      <span class="feature-label">Dashboard</span>
+      <span class="feature-desc">List of managed Linux servers</span>
+    </li>
+    <li>
+      <span class="feature-label">Live metrics</span>
+      <span class="feature-desc">CPU, memory, network RX/TX, listening ports</span>
+    </li>
+    <li>
+      <span class="feature-label">Auto-refresh</span>
+      <span class="feature-desc">Detail snapshots every 10 seconds</span>
+    </li>
+  </ul>
+  <p class="note">Sign in, add Linux hosts, then open a server for live CPU, memory, network, and ports.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard · Server Monitor{% endblock %}
+
+{% block content %}
+<section class="section-head">
+  <div>
+    <p class="eyebrow">Signed in as {{ current_user }}</p>
+    <h1>Dashboard</h1>
+    <p class="lede">Managed Linux servers. Open a host for a live, read-only metrics snapshot.</p>
+  </div>
+  <a class="btn btn--primary" href="{{ url_for('main.server_new') }}">Add server</a>
+</section>
+
+{% if servers %}
+<div class="table-wrap">
+  <table class="server-table">
+    <thead>
+      <tr>
+        <th>Label</th>
+        <th>Host</th>
+        <th>SSH</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in servers %}
+      <tr>
+        <td>
+          <a class="table-link" href="{{ url_for('main.server_detail', server_id=s.id) }}">{{ s.label }}</a>
+        </td>
+        <td><code>{{ s.hostname }}</code></td>
+        <td><code>{{ s.ssh_username }}@{{ s.ssh_port }}</code> · {{ s.auth_type }}</td>
+        <td><span class="status-pill">Configured</span></td>
+        <td class="actions">
+          <a href="{{ url_for('main.server_detail', server_id=s.id) }}">View</a>
+          <a href="{{ url_for('main.server_edit', server_id=s.id) }}">Edit</a>
+          <form class="inline-form" method="post" action="{{ url_for('main.server_delete', server_id=s.id) }}" onsubmit="return confirm('Delete server “{{ s.label }}”?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="linkish danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<section class="empty-state">
+  <h2>No servers yet</h2>
+  <p>Add a Linux host with SSH details to start monitoring live snapshots.</p>
+  <a class="btn btn--primary" href="{{ url_for('main.server_new') }}">Add your first server</a>
+</section>
+{% endif %}
+{% endblock %}

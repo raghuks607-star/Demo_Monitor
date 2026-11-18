@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ server.label }} · Server Monitor{% endblock %}
+
+{% block head_extra %}
+<meta http-equiv="refresh" content="{{ refresh_seconds }}">
+{% endblock %}
+
+{% block content %}
+<section class="section-head">
+  <div>
+    <p class="eyebrow">Live snapshot · refreshes every {{ refresh_seconds }}s</p>
+    <h1>{{ server.label }}</h1>
+    <p class="lede"><code>{{ server.ssh_username }}@{{ server.hostname }}:{{ server.ssh_port }}</code> · read-only</p>
+  </div>
+  <div class="cta-row">
+    <a class="btn btn--ghost" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+    <a class="btn btn--ghost" href="{{ url_for('main.server_edit', server_id=server.id) }}">Edit</a>
+  </div>
+</section>
+
+{% if not metrics.ok %}
+<section class="error-panel" role="alert">
+  <h2>Could not collect metrics</h2>
+  <p>{{ metrics.error or "SSH or remote command failed." }}</p>
+  <p class="note">Check reachability, credentials, and host keys. The app did not crash — try again after the next refresh.</p>
+</section>
+{% else %}
+<section class="metrics-grid">
+  <article class="metric-card">
+    <h2>CPU</h2>
+    <p class="metric-value">{{ metrics.cpu_percent }}%</p>
+  </article>
+  <article class="metric-card">
+    <h2>Memory</h2>
+    <p class="metric-value">{{ metrics.memory_used }} used</p>
+    <p class="metric-sub">{{ metrics.memory_free }} free</p>
+  </article>
+  <article class="metric-card">
+    <h2>Network</h2>
+    <p class="metric-value">RX {{ metrics.network_rx }}</p>
+    <p class="metric-sub">TX {{ metrics.network_tx }}</p>
+  </article>
+</section>
+
+<section class="overview ports-panel">
+  <h2>Listening / open ports</h2>
+  {% if metrics.ports %}
+  <ul class="port-list">
+    {% for line in metrics.ports %}
+    <li><code>{{ line }}</code></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="note">No listening ports reported.</p>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}
